@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#121614">
+<title>Ela Servis</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<style>
+  :root {
+    --bg: #121614; --card: #1b211e; --line: #2a332f; --ink: #eef3f0; --muted: #94a19b;
+    --blue: #3b82f6; --green: #22a35a; --green-dark: #1b8a4b; --done: #2b3a33; --warn: #f2b33d;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); }
+  body {
+    font: 16px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    min-height: 100dvh; display: flex; flex-direction: column;
+    padding: max(20px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom));
+    -webkit-tap-highlight-color: transparent;
+  }
+  main { width: 100%; max-width: 440px; margin: 0 auto; flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 28px; }
+  .hidden { display: none !important; }
+  svg { width: 1.2em; height: 1.2em; flex: none; }
+
+  header { text-align: center; }
+  header .logo { display: inline-grid; place-items: center; width: 56px; height: 56px; border-radius: 16px;
+                 background: var(--card); border: 1px solid var(--line); margin-bottom: 12px; }
+  header .logo svg { width: 30px; height: 30px; color: var(--warn); }
+  h1 { margin: 0; font-size: 26px; font-weight: 800; }
+  .sub { color: var(--muted); margin-top: 4px; }
+  #clock { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 14px; margin-top: 6px; }
+
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%;
+    padding: 20px; border: 0; border-radius: 16px; font: inherit; font-size: 20px; font-weight: 700;
+    color: #fff; cursor: pointer; box-shadow: 0 6px 16px -6px rgba(0,0,0,.6); transition: transform .08s, background .2s;
+  }
+  .btn:active { transform: scale(.97); }
+  .btn-gate { background: var(--blue); }
+  .btn-wa { background: var(--green); }
+  .btn-wa.sent { background: var(--done); color: var(--ink); box-shadow: none; border: 1px solid var(--line); }
+  .btn small { font-weight: 500; font-size: 14px; opacity: .85; }
+
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 18px; display: grid; gap: 12px; }
+  .card h2 { margin: 0 0 4px; text-align: center; font-size: 19px; }
+  .card p { margin: 0; text-align: center; color: var(--muted); font-size: 14px; }
+
+  #setup h1 { font-size: 22px; }
+  #setup p { color: var(--muted); }
+  .toast { position: fixed; left: 50%; bottom: max(20px, env(safe-area-inset-bottom)); transform: translateX(-50%);
+           background: var(--ink); color: var(--bg); padding: 12px 18px; border-radius: 12px; font-size: 15px;
+           max-width: calc(100% - 32px); text-align: center; }
+</style>
+</head>
+<body>
+<!-- Kurulum linkiyle açılmadıysa gösterilir -->
+<main id="setup" class="hidden">
+  <h1>Kurulum linki gerekli</h1>
+  <p>Bu sayfa, size WhatsApp'tan gönderilen özel linkle bir kez açılmalı. Linke tekrar dokunun.</p>
+</main>
+
+<main id="app" class="hidden">
+  <header>
+    <div class="logo">
+      <!-- otobüs simgesi -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="15" rx="3"/><path d="M4 11h16M8 18v2M16 18v2"/><circle cx="8" cy="14.5" r=".6" fill="currentColor"/><circle cx="16" cy="14.5" r=".6" fill="currentColor"/></svg>
+    </div>
+    <h1>Ela Beydilli</h1>
+    <div class="sub">Servis Durumu</div>
+    <div id="clock"></div>
+  </header>
+
+  <!-- 1. adım: site kapısı -->
+  <button class="btn btn-gate" id="gateBtn" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v17"/><circle cx="15" cy="12" r="1" fill="currentColor"/></svg>
+    Royal Garden Kapı Aç
+  </button>
+
+  <!-- 2. adım: aileye haber -->
+  <section class="card">
+    <h2>🏠 Ela eve bırakıldı</h2>
+    <p>Her iki butona da basıp WhatsApp'ta <b>Gönder</b>'e dokunun.</p>
+    <button class="btn btn-wa" data-who="baba" type="button"></button>
+    <button class="btn btn-wa" data-who="anne" type="button"></button>
+  </section>
+</main>
+
+<div class="toast hidden" id="toast"></div>
+
+<script>
+// =====================================================================
+// Ela Servis — servis şoförü için tek sayfalık uygulama
+// - Numaralar kodda DEĞİL: ilk açılışta linkin # kısmından okunur ve
+//   bu telefona kaydedilir. (# sonrası sunucuya gönderilmez.)
+//   Örnek: .../#baba=905XXXXXXXXX&anne=905XXXXXXXXX&kapi=905XXXXXXXXX
+// - "Haber ver" butonları WhatsApp'ı mesaj hazır şekilde açar.
+// - Gönderilen kişi o gün için "✓ Gönderildi 17:42" olarak işaretlenir.
+// =====================================================================
+const $ = (id) => document.getElementById(id);
+const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
+
+const PEOPLE = {
+  baba: { label: "Babaya Haber Ver" },
+  anne: { label: "Anneye Haber Ver" },
+};
+
+// --- 1) Linkteki numaraları al, kaydet, adres çubuğundan temizle ---
+function readSetupFromHash() {
+  if (!location.hash) return;
+  const p = new URLSearchParams(location.hash.slice(1));
+  const clean = (v) => (v || "").replace(/\D/g, ""); // sadece rakam
+  const nums = { baba: clean(p.get("baba")), anne: clean(p.get("anne")), kapi: clean(p.get("kapi")) };
+  if (nums.baba || nums.anne || nums.kapi) {
+    store.set("ela.nums", { ...(store.get("ela.nums") || {}), ...Object.fromEntries(Object.entries(nums).filter(([, v]) => v)) });
+  }
+  history.replaceState(null, "", location.pathname); // # kısmını sil
+}
+
+// --- Yardımcılar ---
+const pad = (n) => String(n).padStart(2, "0");
+const nowTime = () => { const d = new Date(); return pad(d.getHours()) + ":" + pad(d.getMinutes()); };
+const todayKey = () => new Date().toLocaleDateString("sv-SE"); // 2026-10-07
+
+function toast(msg) {
+  const t = $("toast"); t.textContent = msg; t.classList.remove("hidden");
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.add("hidden"), 2600);
+}
+
+// Bugün kime gönderildiğini tutar: { date: "2026-10-07", baba: "17:42", anne: "17:43" }
+function sentToday() {
+  const s = store.get("ela.sent");
+  return s && s.date === todayKey() ? s : { date: todayKey() };
+}
+
+const WA_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8.5 8.5 0 0 1-12.6 7.4L3 21l1.6-5.2A8.5 8.5 0 1 1 21 12z"/></svg>';
+
+function renderButtons() {
+  const sent = sentToday();
+  document.querySelectorAll(".btn-wa").forEach((b) => {
+    const who = b.dataset.who;
+    if (sent[who]) {
+      b.classList.add("sent");
+      b.innerHTML = `✓ ${PEOPLE[who].label.replace(" Haber Ver", "")} <small>gönderildi ${sent[who]}</small>`;
+    } else {
+      b.classList.remove("sent");
+      b.innerHTML = WA_ICON + PEOPLE[who].label;
+    }
+  });
+}
+
+// --- 2) Butonlar ---
+function notify(who) {
+  const nums = store.get("ela.nums") || {};
+  if (!nums[who]) return toast("Bu kişinin numarası kayıtlı değil");
+  const time = nowTime();
+  const text = `🏠 Ela eve bırakıldı (${time}) – Emre Kılıç`;
+  // Bugünkü gönderimi işaretle (WhatsApp'a geçmeden önce)
+  const sent = sentToday(); sent[who] = time; store.set("ela.sent", sent);
+  renderButtons();
+  // WhatsApp'ı mesaj hazır şekilde aç (resmi wa.me linki)
+  location.href = `https://wa.me/${nums[who]}?text=${encodeURIComponent(text)}`;
+}
+
+function openGate() {
+  const nums = store.get("ela.nums") || {};
+  if (!nums.kapi) return toast("Kapı numarası kayıtlı değil");
+  location.href = `tel:+${nums.kapi}`; // tuş ekranı açılır, "Ara"ya basılır
+}
+
+document.querySelectorAll(".btn-wa").forEach((b) => b.addEventListener("click", () => notify(b.dataset.who)));
+$("gateBtn").addEventListener("click", openGate);
+
+// Saat göstergesi
+function tick() {
+  $("clock").textContent = new Date().toLocaleString("tr-TR", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
+}
+
+// Uygulamaya geri dönülünce (örn. WhatsApp'tan) ekranı tazele; gün değiştiyse işaretler sıfırlanır
+document.addEventListener("visibilitychange", () => { if (!document.hidden) { renderButtons(); tick(); } });
+
+// --- Başlangıç ---
+readSetupFromHash();
+const nums = store.get("ela.nums");
+if (!nums || !(nums.baba || nums.anne)) {
+  $("setup").classList.remove("hidden");
+} else {
+  $("app").classList.remove("hidden");
+  renderButtons(); tick(); setInterval(tick, 30_000);
+}
+
+// Çevrimdışı açılabilmesi için service worker
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+</script>
+</body>
+</html>
