@@ -1,59 +1,127 @@
 <!doctype html>
-<html lang="tr">
+<html lang="tr" data-theme="gece">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
-<meta name="theme-color" content="#121614">
+<meta name="theme-color" content="#0f1513">
 <title>Ela Servis</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png">
+<script>
+  // Seçili temayı sayfa çizilmeden önce uygula (açılışta renk "sıçraması" olmasın)
+  try { const t = localStorage.getItem("ela.theme"); if (t) document.documentElement.dataset.theme = JSON.parse(t); } catch {}
+</script>
 <style>
-  :root {
-    --bg: #121614; --card: #1b211e; --line: #2a332f; --ink: #eef3f0; --muted: #94a19b;
-    --blue: #3b82f6; --green: #22a35a; --green-dark: #1b8a4b; --done: #2b3a33; --warn: #f2b33d;
+  /* ===================================================================
+     TEMALAR — 3 koyu + 1 açık. Tüm yazı/zemin çiftleri en az 4.5:1
+     kontrastlı (gün ışığında okunurluk için çoğu 7:1 üstü).
+     =================================================================== */
+  :root, [data-theme="gece"] {          /* Gece — antrasit + yeşil (varsayılan) */
+    --bg: #0f1513; --bg2: #16201c; --card: #1a2420; --line: #2c3a34;
+    --ink: #f2f6f4; --muted: #b3c0ba; --accent: #f5b942;
+    --gate: #1d4ed8; --gate-ink: #ffffff;
+    --wa: #15803d; --wa-ink: #ffffff;
+    --done: #233029; --done-ink: #d6f5e1; --done-mark: #4ade80;
   }
+  [data-theme="lacivert"] {             /* Lacivert — gece mavisi + altın */
+    --bg: #0b1222; --bg2: #121c33; --card: #16223d; --line: #2a3a5e;
+    --ink: #f3f6fc; --muted: #b6c2dc; --accent: #fbbf24;
+    --gate: #2563eb; --gate-ink: #ffffff;
+    --wa: #047857; --wa-ink: #ffffff;
+    --done: #1c2a47; --done-ink: #d3f3e6; --done-mark: #34d399;
+  }
+  [data-theme="grafit"] {               /* Grafit — saf siyah, en yüksek kontrast */
+    --bg: #000000; --bg2: #0d0d0d; --card: #121212; --line: #3a3a3a;
+    --ink: #ffffff; --muted: #c9c9c9; --accent: #ffd60a;
+    --gate: #1e40af; --gate-ink: #ffffff;
+    --wa: #166534; --wa-ink: #ffffff;
+    --done: #1f1f1f; --done-ink: #e6ffe9; --done-mark: #5eea8a;
+  }
+  [data-theme="gunduz"] {               /* Gündüz — güneş altında okunur açık tema */
+    --bg: #eef1ee; --bg2: #e2e8e3; --card: #ffffff; --line: #c9d3cc;
+    --ink: #0d1411; --muted: #3f4c46; --accent: #b45309;
+    --gate: #1d4ed8; --gate-ink: #ffffff;
+    --wa: #15803d; --wa-ink: #ffffff;
+    --done: #e3efe7; --done-ink: #14532d; --done-mark: #15803d;
+  }
+
   * { box-sizing: border-box; }
-  html, body { margin: 0; background: var(--bg); color: var(--ink); }
+  html, body { margin: 0; color: var(--ink); background: var(--bg); }
   body {
-    font: 16px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font: 17px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     min-height: 100dvh; display: flex; flex-direction: column;
-    padding: max(20px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom));
+    padding: max(18px, env(safe-area-inset-top)) 16px max(18px, env(safe-area-inset-bottom));
+    background: radial-gradient(120% 60% at 50% 0%, var(--bg2) 0%, var(--bg) 60%) fixed;
     -webkit-tap-highlight-color: transparent;
   }
-  main { width: 100%; max-width: 440px; margin: 0 auto; flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 28px; }
+  main { width: 100%; max-width: 440px; margin: 0 auto; flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 22px; }
   .hidden { display: none !important; }
-  svg { width: 1.2em; height: 1.2em; flex: none; }
+  svg { flex: none; }
 
-  header { text-align: center; }
-  header .logo { display: inline-grid; place-items: center; width: 56px; height: 56px; border-radius: 16px;
-                 background: var(--card); border: 1px solid var(--line); margin-bottom: 12px; }
-  header .logo svg { width: 30px; height: 30px; color: var(--warn); }
-  h1 { margin: 0; font-size: 26px; font-weight: 800; }
-  .sub { color: var(--muted); margin-top: 4px; }
-  #clock { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 14px; margin-top: 6px; }
+  /* Üst bölüm */
+  header { display: flex; align-items: center; gap: 14px; }
+  .logo { width: 56px; height: 56px; border-radius: 18px; display: grid; place-items: center; flex: none;
+          background: var(--card); border: 1px solid var(--line); color: var(--accent); }
+  .logo svg { width: 30px; height: 30px; }
+  .title { flex: 1; min-width: 0; }
+  h1 { margin: 0; font-size: 25px; font-weight: 800; letter-spacing: -.01em; }
+  #clock { color: var(--muted); font-size: 15px; font-weight: 500; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .theme-btn { width: 44px; height: 44px; border-radius: 14px; border: 1px solid var(--line); background: var(--card);
+               color: var(--ink); display: grid; place-items: center; cursor: pointer; flex: none; }
+  .theme-btn svg { width: 22px; height: 22px; }
 
+  /* Butonlar */
   .btn {
-    display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%;
-    padding: 20px; border: 0; border-radius: 16px; font: inherit; font-size: 20px; font-weight: 700;
-    color: #fff; cursor: pointer; box-shadow: 0 6px 16px -6px rgba(0,0,0,.6); transition: transform .08s, background .2s;
+    position: relative; display: flex; align-items: center; gap: 14px; width: 100%; min-height: 76px;
+    padding: 14px 18px 14px 14px; border: 0; border-radius: 20px; cursor: pointer; text-align: left;
+    font: inherit; font-size: 20px; font-weight: 750; letter-spacing: -.005em;
+    box-shadow: 0 1px 0 rgba(255,255,255,.12) inset, 0 10px 24px -12px rgba(0,0,0,.65);
+    transition: transform .08s ease, filter .15s ease;
   }
-  .btn:active { transform: scale(.97); }
-  .btn-gate { background: var(--blue); }
-  .btn-wa { background: var(--green); }
-  .btn-wa.sent { background: var(--done); color: var(--ink); box-shadow: none; border: 1px solid var(--line); }
-  .btn small { font-weight: 500; font-size: 14px; opacity: .85; }
+  .btn:active { transform: scale(.975); filter: brightness(.95); }
+  .btn .chip { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; flex: none;
+               background: rgba(255,255,255,.18); }
+  .btn .chip svg { width: 26px; height: 26px; }
+  .btn .txt { flex: 1; display: flex; flex-direction: column; line-height: 1.2; }
+  .btn .txt small { font-size: 15px; font-weight: 500; opacity: .9; margin-top: 3px; }
+  .btn .arrow { opacity: .75; }
+  .btn .arrow svg { width: 22px; height: 22px; }
 
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 18px; display: grid; gap: 12px; }
-  .card h2 { margin: 0 0 4px; text-align: center; font-size: 19px; }
-  .card p { margin: 0; text-align: center; color: var(--muted); font-size: 14px; }
+  .btn-gate { background: var(--gate); color: var(--gate-ink); }
+  .btn-wa { background: var(--wa); color: var(--wa-ink); }
+  .btn-wa.sent { background: var(--done); color: var(--done-ink); box-shadow: inset 0 0 0 2px var(--done-mark); }
+  .btn-wa.sent .chip { background: var(--done-mark); color: var(--done); }
 
-  #setup h1 { font-size: 22px; }
+  /* Kart */
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 26px; padding: 18px; display: grid; gap: 12px;
+          box-shadow: 0 20px 40px -28px rgba(0,0,0,.7); }
+  .card-head { display: flex; align-items: center; gap: 10px; padding: 2px 4px 4px; }
+  .card-head .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); flex: none;
+                    box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 22%, transparent); }
+  .card-head h2 { margin: 0; font-size: 21px; font-weight: 800; }
+  .card-head p { margin: 2px 0 0; color: var(--muted); font-size: 16px; font-weight: 500; }
+
+  .step { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 4px -12px; }
+
+  /* Tema seçici */
+  .sheet-bg { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: flex; align-items: flex-end; justify-content: center; z-index: 5; }
+  .sheet { width: 100%; max-width: 440px; background: var(--card); color: var(--ink); border: 1px solid var(--line);
+           border-radius: 24px 24px 0 0; padding: 18px 16px max(22px, env(safe-area-inset-bottom)); }
+  .sheet h3 { margin: 0 4px 14px; font-size: 18px; }
+  .themes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .theme-opt { border: 2px solid var(--line); border-radius: 16px; padding: 10px; cursor: pointer; font: inherit; font-weight: 700;
+               display: grid; gap: 8px; text-align: left; }
+  .theme-opt[aria-pressed="true"] { border-color: var(--accent); }
+  .swatch { height: 46px; border-radius: 10px; display: flex; gap: 6px; align-items: flex-end; padding: 7px; }
+  .swatch i { width: 22px; height: 14px; border-radius: 4px; display: block; }
+
+  #setup h1 { font-size: 23px; }
   #setup p { color: var(--muted); }
-  .toast { position: fixed; left: 50%; bottom: max(20px, env(safe-area-inset-bottom)); transform: translateX(-50%);
-           background: var(--ink); color: var(--bg); padding: 12px 18px; border-radius: 12px; font-size: 15px;
-           max-width: calc(100% - 32px); text-align: center; }
+  .toast { position: fixed; left: 50%; bottom: max(22px, env(safe-area-inset-bottom)); transform: translateX(-50%);
+           background: var(--ink); color: var(--bg); padding: 12px 18px; border-radius: 14px; font-size: 16px; font-weight: 600;
+           max-width: calc(100% - 32px); text-align: center; z-index: 9; }
 </style>
 </head>
 <body>
@@ -65,29 +133,45 @@
 
 <main id="app" class="hidden">
   <header>
-    <div class="logo">
-      <!-- otobüs simgesi -->
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="15" rx="3"/><path d="M4 11h16M8 18v2M16 18v2"/><circle cx="8" cy="14.5" r=".6" fill="currentColor"/><circle cx="16" cy="14.5" r=".6" fill="currentColor"/></svg>
+    <div class="logo" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="15" rx="3"/><path d="M4 11h16M8 18v2M16 18v2"/><circle cx="8" cy="14.5" r=".7" fill="currentColor"/><circle cx="16" cy="14.5" r=".7" fill="currentColor"/></svg>
     </div>
-    <h1>Ela Beydilli</h1>
-    <div class="sub">Servis Durumu</div>
-    <div id="clock"></div>
+    <div class="title">
+      <h1>Ela Beydilli</h1>
+      <div id="clock"></div>
+    </div>
+    <button class="theme-btn" id="themeBtn" type="button" aria-label="Tema seç">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M12 3a9 9 0 0 1 0 18" fill="currentColor"/></svg>
+    </button>
   </header>
 
   <!-- 1. adım: site kapısı -->
+  <div class="step">1 · Giriş</div>
   <button class="btn btn-gate" id="gateBtn" type="button">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v17"/><circle cx="15" cy="12" r="1" fill="currentColor"/></svg>
-    Royal Garden Kapı Aç
+    <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v17"/><circle cx="15" cy="12" r="1.1" fill="currentColor"/></svg></span>
+    <span class="txt">Royal Garden Kapı Aç<small>Kapıyı arar</small></span>
+    <span class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
   </button>
 
   <!-- 2. adım: aileye haber -->
+  <div class="step">2 · Teslim</div>
   <section class="card">
-    <h2>🏠 Ela eve bırakıldı</h2>
-    <p>Her iki butona da basıp WhatsApp'ta <b>Gönder</b>'e dokunun.</p>
+    <div class="card-head">
+      <span class="dot"></span>
+      <div><h2>🏠 Ela eve bırakıldı</h2><p>Baba ve/veya anneye haber ver</p></div>
+    </div>
     <button class="btn btn-wa" data-who="baba" type="button"></button>
     <button class="btn btn-wa" data-who="anne" type="button"></button>
   </section>
 </main>
+
+<!-- Tema seçim paneli -->
+<div class="sheet-bg hidden" id="sheet">
+  <div class="sheet" role="dialog" aria-label="Tema">
+    <h3>Tema</h3>
+    <div class="themes" id="themes"></div>
+  </div>
+</div>
 
 <div class="toast hidden" id="toast"></div>
 
@@ -98,17 +182,31 @@
 //   bu telefona kaydedilir. (# sonrası sunucuya gönderilmez.)
 //   Örnek: .../#baba=905XXXXXXXXX&anne=905XXXXXXXXX&kapi=905XXXXXXXXX
 // - "Haber ver" butonları WhatsApp'ı mesaj hazır şekilde açar.
-// - Gönderilen kişi o gün için "✓ Gönderildi 17:42" olarak işaretlenir.
+// - "Gönderildi" işareti sadece bu oturumda ve 10 dakika görünür;
+//   uygulama kapatılıp açılınca butonlar varsayılana döner.
 // =====================================================================
 const $ = (id) => document.getElementById(id);
-const store = {
+const store = {       // kalıcı (numaralar, tema)
   get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
 };
+const session = {     // geçici (uygulama kapanınca silinir)
+  get(k) { try { return JSON.parse(sessionStorage.getItem(k)); } catch { return null; } },
+  set(k, v) { try { sessionStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
+const SENT_TTL_MS = 10 * 60 * 1000; // "gönderildi" işaretinin süresi
+let sentMemory = {};                // sessionStorage çalışmazsa yedek
 
 const PEOPLE = {
-  baba: { label: "Babaya Haber Ver" },
-  anne: { label: "Anneye Haber Ver" },
+  baba: { label: "Babaya Haber Ver", done: "Babaya gönderildi" },
+  anne: { label: "Anneye Haber Ver", done: "Anneye gönderildi" },
+};
+
+const THEMES = {
+  gece:     { name: "Gece",     color: "#0f1513", sw: ["#15803d", "#1d4ed8", "#f5b942"] },
+  lacivert: { name: "Lacivert", color: "#0b1222", sw: ["#047857", "#2563eb", "#fbbf24"] },
+  grafit:   { name: "Grafit",   color: "#000000", sw: ["#166534", "#1e40af", "#ffd60a"] },
+  gunduz:   { name: "Gündüz",   color: "#eef1ee", sw: ["#15803d", "#1d4ed8", "#b45309"] },
 };
 
 // --- 1) Linkteki numaraları al, kaydet, adres çubuğundan temizle ---
@@ -125,32 +223,38 @@ function readSetupFromHash() {
 
 // --- Yardımcılar ---
 const pad = (n) => String(n).padStart(2, "0");
-const nowTime = () => { const d = new Date(); return pad(d.getHours()) + ":" + pad(d.getMinutes()); };
-const todayKey = () => new Date().toLocaleDateString("sv-SE"); // 2026-10-07
+const fmtTime = (ts) => { const d = new Date(ts); return pad(d.getHours()) + ":" + pad(d.getMinutes()); };
 
 function toast(msg) {
   const t = $("toast"); t.textContent = msg; t.classList.remove("hidden");
   clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.add("hidden"), 2600);
 }
 
-// Bugün kime gönderildiğini tutar: { date: "2026-10-07", baba: "17:42", anne: "17:43" }
-function sentToday() {
-  const s = store.get("ela.sent");
-  return s && s.date === todayKey() ? s : { date: todayKey() };
+// Son 10 dk içinde bu oturumda kime gönderildi: { baba: 1696..., anne: ... }
+function recentSent() {
+  const all = { ...sentMemory, ...(session.get("ela.sent") || {}) };
+  const now = Date.now();
+  return Object.fromEntries(Object.entries(all).filter(([, ts]) => now - ts < SENT_TTL_MS));
 }
 
-const WA_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8.5 8.5 0 0 1-12.6 7.4L3 21l1.6-5.2A8.5 8.5 0 1 1 21 12z"/></svg>';
+const ICON = {
+  wa: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8.5 8.5 0 0 1-12.6 7.4L3 21l1.6-5.2A8.5 8.5 0 1 1 21 12z"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  arrow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>',
+};
 
 function renderButtons() {
-  const sent = sentToday();
+  const sent = recentSent();
   document.querySelectorAll(".btn-wa").forEach((b) => {
     const who = b.dataset.who;
     if (sent[who]) {
       b.classList.add("sent");
-      b.innerHTML = `✓ ${PEOPLE[who].label.replace(" Haber Ver", "")} <small>gönderildi ${sent[who]}</small>`;
+      b.innerHTML = `<span class="chip">${ICON.check}</span>
+        <span class="txt">${PEOPLE[who].done}<small>Saat ${fmtTime(sent[who])} · tekrar için dokunun</small></span>`;
     } else {
       b.classList.remove("sent");
-      b.innerHTML = WA_ICON + PEOPLE[who].label;
+      b.innerHTML = `<span class="chip">${ICON.wa}</span>
+        <span class="txt">${PEOPLE[who].label}<small>WhatsApp ile</small></span><span class="arrow">${ICON.arrow}</span>`;
     }
   });
 }
@@ -159,10 +263,11 @@ function renderButtons() {
 function notify(who) {
   const nums = store.get("ela.nums") || {};
   if (!nums[who]) return toast("Bu kişinin numarası kayıtlı değil");
-  const time = nowTime();
-  const text = `🏠 Ela eve bırakıldı (${time}) – Emre Kılıç`;
-  // Bugünkü gönderimi işaretle (WhatsApp'a geçmeden önce)
-  const sent = sentToday(); sent[who] = time; store.set("ela.sent", sent);
+  const now = Date.now();
+  const text = `🏠 Ela eve bırakıldı (${fmtTime(now)}) – Emre Kılıç`;
+  // Gönderimi bu oturum için işaretle (WhatsApp'a geçmeden önce)
+  sentMemory[who] = now;
+  session.set("ela.sent", { ...(session.get("ela.sent") || {}), [who]: now });
   renderButtons();
   // WhatsApp'ı mesaj hazır şekilde aç (resmi wa.me linki)
   location.href = `https://wa.me/${nums[who]}?text=${encodeURIComponent(text)}`;
@@ -177,22 +282,47 @@ function openGate() {
 document.querySelectorAll(".btn-wa").forEach((b) => b.addEventListener("click", () => notify(b.dataset.who)));
 $("gateBtn").addEventListener("click", openGate);
 
+// --- 3) Tema ---
+function applyTheme(key) {
+  if (!THEMES[key]) key = "gece";
+  document.documentElement.dataset.theme = key;
+  document.querySelector('meta[name="theme-color"]').content = THEMES[key].color;
+  store.set("ela.theme", key);
+  document.querySelectorAll(".theme-opt").forEach((o) => o.setAttribute("aria-pressed", String(o.dataset.key === key)));
+}
+
+function buildThemePicker() {
+  $("themes").innerHTML = Object.entries(THEMES).map(([key, t]) => `
+    <button class="theme-opt" data-key="${key}" type="button" style="background:${t.color};color:${key === "gunduz" ? "#0d1411" : "#ffffff"}">
+      <span class="swatch" style="background:${t.color};box-shadow:inset 0 0 0 1px rgba(127,127,127,.35)">
+        ${t.sw.map((c) => `<i style="background:${c}"></i>`).join("")}
+      </span>${t.name}
+    </button>`).join("");
+  $("themes").querySelectorAll(".theme-opt").forEach((o) =>
+    o.addEventListener("click", () => { applyTheme(o.dataset.key); $("sheet").classList.add("hidden"); }));
+}
+$("themeBtn").addEventListener("click", () => $("sheet").classList.remove("hidden"));
+$("sheet").addEventListener("click", (e) => { if (e.target.id === "sheet") $("sheet").classList.add("hidden"); });
+
 // Saat göstergesi
 function tick() {
   $("clock").textContent = new Date().toLocaleString("tr-TR", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
 }
 
-// Uygulamaya geri dönülünce (örn. WhatsApp'tan) ekranı tazele; gün değiştiyse işaretler sıfırlanır
+// Uygulamaya geri dönülünce (örn. WhatsApp'tan) ekranı tazele; 10 dk geçtiyse işaretler kalkar
 document.addEventListener("visibilitychange", () => { if (!document.hidden) { renderButtons(); tick(); } });
 
 // --- Başlangıç ---
 readSetupFromHash();
+buildThemePicker();
+applyTheme(store.get("ela.theme") || "gece");
 const nums = store.get("ela.nums");
 if (!nums || !(nums.baba || nums.anne)) {
   $("setup").classList.remove("hidden");
 } else {
   $("app").classList.remove("hidden");
-  renderButtons(); tick(); setInterval(tick, 30_000);
+  renderButtons(); tick();
+  setInterval(() => { tick(); renderButtons(); }, 30_000);
 }
 
 // Çevrimdışı açılabilmesi için service worker

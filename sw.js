@@ -2,7 +2,7 @@
 // Sayfayı telefona önbelleğe alır: internet zayıfken de anında açılır.
 // Önce internetten taze sürümü dener, olmazsa kayıtlı sürümü gösterir.
 // Sayfayı güncellediğinizde VERSION değerini artırın.
-const VERSION = "ela-v1";
+const VERSION = "ela-v2";
 const FILES = ["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png"];
 
 self.addEventListener("install", (e) => {
