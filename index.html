@@ -103,6 +103,16 @@
   .card-head h2 { margin: 0; font-size: 21px; font-weight: 800; }
   .card-head p { margin: 2px 0 0; color: var(--muted); font-size: 16px; font-weight: 500; }
 
+  /* Arama butonları (yan yana, çerçeveli — WhatsApp'tan ikincil görünür) */
+  .divider { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 14px; font-weight: 600; margin: 4px 2px 0; }
+  .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  .calls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .btn-call { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 60px; padding: 10px;
+              border-radius: 16px; cursor: pointer; font: inherit; font-size: 18px; font-weight: 750;
+              background: var(--bg); color: var(--ink); border: 2px solid var(--line); transition: transform .08s ease; }
+  .btn-call svg { width: 22px; height: 22px; color: var(--done-mark); }
+  .btn-call:active { transform: scale(.97); border-color: var(--done-mark); }
+
   .step { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 4px -12px; }
 
   /* Tema seçici */
@@ -162,6 +172,19 @@
     </div>
     <button class="btn btn-wa" data-who="baba" type="button"></button>
     <button class="btn btn-wa" data-who="anne" type="button"></button>
+
+    <!-- Evdeyse: arama butonları -->
+    <div class="divider"><span>Evdeyseniz arayın</span></div>
+    <div class="calls">
+      <button class="btn-call" data-call="baba" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>
+        Babayı Ara
+      </button>
+      <button class="btn-call" data-call="anne" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>
+        Anneyi Ara
+      </button>
+    </div>
   </section>
 </main>
 
@@ -279,7 +302,15 @@ function openGate() {
   location.href = `tel:+${nums.kapi}`; // tuş ekranı açılır, "Ara"ya basılır
 }
 
+// Babayı / Anneyi ara — tuş ekranı numara yazılı açılır, "Ara"ya basılır
+function callPerson(who) {
+  const nums = store.get("ela.nums") || {};
+  if (!nums[who]) return toast("Bu kişinin numarası kayıtlı değil");
+  location.href = `tel:+${nums[who]}`;
+}
+
 document.querySelectorAll(".btn-wa").forEach((b) => b.addEventListener("click", () => notify(b.dataset.who)));
+document.querySelectorAll(".btn-call").forEach((b) => b.addEventListener("click", () => callPerson(b.dataset.call)));
 $("gateBtn").addEventListener("click", openGate);
 
 // --- 3) Tema ---
